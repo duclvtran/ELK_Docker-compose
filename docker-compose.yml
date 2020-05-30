@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  elasticsearch:
+    container_name: elastic_770
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+    build: elasticsearch
+    environment:
+        ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+    ports:
+      - "9203:9200"
+      - "9302:9300"
+    volumes:
+      - ./elasticsearch/config/:/etc/elasticsearch/config/
+  kibana:
+    container_name: kibana_770
+    image: docker.elastic.co/kibana/kibana:7.7.0
+    build: kibana 
+    ports:
+      - 5601:5601
+    volumes:
+      - ./kibana/config/:/opt/kibana/config/
+    depends_on:
+      - elasticsearch
+  logstash:
+    container_name: logstash_770
+    image: docker.elastic.co/logstash/logstash:7.7.0
+    command: -f /etc/logstash/conf.d/
+    build: logstash
+    ports:
+      - 5000:5000
+    volumes:
+      - ./logstash/config:/etc/logstash/conf.d
+    depends_on:
+      - elasticsearch
